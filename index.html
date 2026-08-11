@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="theme-color" content="#000000"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Deplay"/>
+<link rel="manifest" href="#" id="manifestLink"/>
+<title>Deplay Music</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="toast"></div>
+
+<div id="ld">
+  <div class="ld-logo">
+    <div class="ld-dot"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+    <span class="ld-name">Deplay</span>
+  </div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+  <p class="ld-sub">Music Player</p>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sb glass-sheen" id="sb">
+    <div class="sb-top">
+      <div class="sb-brand">
+        <div class="sb-dot"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <span class="sb-name">Deplay</span>
+      </div>
+      <nav class="sb-nav">
+        <div class="sn on" data-p="home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Beranda</span></div>
+        <div class="sn" data-p="search" onclick="goPage('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Cari</span></div>
+        <div class="sn" data-p="lyrics" onclick="goPage('lyrics',this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>Lirik</span></div>
+        <div class="sn" data-p="library" onclick="goPage('library',this)"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Koleksi</span></div>
+        <div class="sn" data-p="fav" onclick="goPage('fav',this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Favorit</span></div>
+      </nav>
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-sec">Playlist</div>
+    <div class="sb-list" id="sbList"></div>
+    <div class="sb-bottom">
+      <button class="sb-btn" onclick="toast('Pengaturan segera hadir')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Pengaturan</button>
+    </div>
+  </aside>
+  <div class="sb-ov" id="sbOv" onclick="closeSB()"></div>
+
+  <main class="main">
+    <div class="topbar glass-sheen">
+      <button class="tb-burg" onclick="toggleSB()"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="tb-srch">
+        <div class="tb-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="tbInp" type="text" placeholder="Cari lagu, artis, album…" autocomplete="off"/>
+          <button class="tb-clr" id="tbClr" onclick="clearTb()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="tb-drop glass-sheen" id="tbDrop"></div>
+      </div>
+      <div class="tb-right">
+        <button class="tb-ico" onclick="goPage('lyrics',document.querySelector('[data-p=lyrics]'))" title="Lirik">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </button>
+        <div class="tb-av" onclick="toast('Profil')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      </div>
+    </div>
+
+    <div class="pages">
+      <section class="page on" id="pg-home">
+        <div class="ps">
+          <div class="hero">
+            <div class="hero-bg" id="heroBg"></div>
+            <div class="hero-blur" id="heroBlur"></div>
+            <div class="hero-fade"></div>
+            <div class="hero-c">
+              <div class="hero-eye"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="heroEye">Deplay Music</span></div>
+              <h1 class="hero-h1" id="heroTitle">Temukan Musik Terbaikmu</h1>
+              <p class="hero-p" id="heroSub">Trending di Indonesia — streaming langsung</p>
+              <div class="hero-btns">
+                <button class="btn btn-g" id="heroPlayBtn" onclick="playTrending()"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Putar Trending</button>
+                <button class="btn btn-o" onclick="qPlay('lofi hip hop chill beats')">Chill Mode</button>
+              </div>
+            </div>
+          </div>
+          <div class="sec">
+            <div class="sec-hd"><span class="sec-title" id="qTitle">Pilihan Cepat</span></div>
+            <div class="qgrid" id="qgrid"></div>
+          </div>
+          <div class="sec">
+            <div class="sec-hd"><span class="sec-title" id="trendTitle">Trending di Indonesia</span><span class="sec-all" onclick="playTrending()">Putar Semua <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+            <div class="crow" id="trendRow"></div>
+          </div>
+          <div class="sec">
+            <div class="sec-hd"><span class="sec-title">Terakhir Diputar</span></div>
+            <div class="tw" id="recentWrap"><div class="empty-note">Belum ada riwayat putar.</div></div>
+          </div>
+          <div class="sec">
+            <div class="sec-hd"><span class="sec-title">Rekomendasi Untukmu</span></div>
+            <div class="crow" id="recRow"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="pg-search">
+        <div class="ps">
+          <div class="sp">
+            <div class="sp-bar glass-sheen">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input id="spInp" type="text" placeholder="Cari lagu, artis, album…" autocomplete="off"/>
+            </div>
+            <div id="spRes">
+              <div class="sp-empty">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <p>Ketik untuk mencari lagu<br/><span>Satu hasil terbaik per lagu</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="pg-lyrics">
+        <div class="lyr-wrap">
+          <div class="lyr-head">
+            <div class="lyr-cover" id="lyrCover"><div class="cover-ph"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div></div>
+            <div class="lyr-meta">
+              <div class="lyr-song-title" id="lyrTitle">Pilih lagu untuk melihat lirik</div>
+              <div class="lyr-artist" id="lyrArtist">—</div>
+            </div>
+          </div>
+          <div class="lyr-body" id="lyrBody">
+            <div class="lyr-empty">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <p>Putar lagu untuk melihat lirik</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="pg-library">
+        <div class="ps" style="padding-top:18px">
+          <div class="lib-heading">Koleksiku</div>
+          <div class="lib-tabs">
+            <button class="lt on" onclick="libTab(this,'pl')">Playlist</button>
+            <button class="lt" onclick="libTab(this,'ar')">Artis</button>
+            <button class="lt" onclick="libTab(this,'re')">Terbaru</button>
+          </div>
+          <div class="lib-c" id="libC"></div>
+        </div>
+      </section>
+
+      <section class="page" id="pg-fav">
+        <div class="ps">
+          <div class="fav-hero">
+            <div class="fav-cov glass-sheen"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div>
+              <p class="fav-tag">Playlist</p>
+              <h2 class="fav-ttl">Lagu Favorit</h2>
+              <p class="fav-meta" id="favMeta">0 lagu</p>
+            </div>
+          </div>
+          <div class="fav-acts">
+            <button class="btn btn-g" onclick="playFav()"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Putar Semua</button>
+            <button class="cb md" id="favSf" onclick="toggleShuffle()"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></button>
+          </div>
+          <div class="tw" id="favList"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="player glass-sheen">
+    <div class="pl-l">
+      <div class="pl-cov" id="plCov" onclick="openFS()">
+        <div class="pl-cov-ph" id="plCovPh"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      </div>
+      <div class="pl-nfo">
+        <div class="pl-tt" id="plTitle">Pilih lagu untuk diputar</div>
+        <div class="pl-ar" id="plArt">—</div>
+      </div>
+      <button class="pl-hrt" id="plHrt" onclick="toggleLike()"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+    </div>
+    <div class="pl-c">
+      <div class="pl-ctrl">
+        <button class="cb sm" id="sfBtn" onclick="toggleShuffle()"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></button>
+        <button class="cb md" onclick="prevSong()"><svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></button>
+        <button class="pp" id="ppBtn" onclick="togglePlay()"><svg id="ppIco" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="cb md" onclick="nextSong()"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+        <button class="cb sm" id="rpBtn" onclick="toggleRepeat()"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+      </div>
+      <div class="pl-prog">
+        <span class="ts" id="curT">0:00</span>
+        <div class="pb" id="pBar" onclick="seekTo(event)"><div class="pbf" id="pFill" style="width:0%"></div><div class="pbt"></div></div>
+        <span class="ts" id="totT">0:00</span>
+      </div>
+    </div>
+    <div class="pl-r">
+      <div class="eq-bars" id="eqBars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>
+      <button class="cb sm" onclick="goPage('lyrics',document.querySelector('[data-p=lyrics]'))" title="Lirik"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button>
+      <button class="cb sm" onclick="showQ()"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+      <div class="vw">
+        <button class="cb sm" id="volBtn" onclick="muteToggle()"><svg id="volIco" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+        <div class="vb" id="volBar" onclick="setVol(event)"><div class="vbf" id="volFill" style="width:75%"></div></div>
+      </div>
+      <button class="cb sm" onclick="openFS()"><svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+    </div>
+  </div>
+
+  <div class="fs" id="fs">
+    <div class="fs-bg" id="fsBg"></div>
+    <div class="fs-blur" id="fsBlur"></div>
+    <div class="fs-ov"></div>
+    <button class="fs-x" onclick="closeFS()"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
+    <button class="fs-lyr-btn" id="fsLyrBtn" onclick="toggleFSLyrics()" title="Lirik"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button>
+    <div class="fs-lyr-overlay" id="fsLyrOverlay">
+      <div class="fs-lyr-scroll" id="fsLyrScroll"></div>
+    </div>
+    <div class="fs-panel glass-sheen" id="fsBody">
+      <div class="fs-cov" id="fsCov">
+        <div class="fs-cov-ph" id="fsCovPh"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      </div>
+      <div class="fs-nfo">
+        <div class="fs-tt" id="fsTt">—</div>
+        <div class="fs-ar" id="fsAr">—</div>
+        <button class="fs-hrt" id="fsHrt" onclick="toggleLike()"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+      </div>
+      <div class="fs-prog">
+        <div class="pb lg" id="fsPBar" onclick="seekTo(event)"><div class="pbf" id="fsPFill" style="width:0%"></div><div class="pbt"></div></div>
+        <div class="fs-times"><span id="fsCurT">0:00</span><span id="fsTotT">0:00</span></div>
+      </div>
+      <div class="fs-ctrl">
+        <button class="cb sm" id="fsSf" onclick="toggleShuffle()"><svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></button>
+        <button class="cb md" onclick="prevSong()"><svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></button>
+        <button class="pp lg" id="fsPP" onclick="togglePlay()"><svg id="fsIco" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="cb md" onclick="nextSong()"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+        <button class="cb sm" id="fsRp" onclick="toggleRepeat()"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+      </div>
+      <div class="fs-vol">
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
+        <div class="vb lg" id="fsVol" onclick="setVol(event)"><div class="vbf" id="fsVFill" style="width:75%"></div></div>
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-bk" id="qBk" onclick="closeQ()"></div>
+  <div class="q-panel glass-sheen" id="qPanel">
+    <div class="q-hd"><h3>Antrian</h3><button class="q-cls" onclick="closeQ()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="q-list" id="qList"></div>
+  </div>
+
+  <nav class="mobnav glass-sheen">
+    <div class="mni on" data-p="home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Beranda</span></div>
+    <div class="mni" data-p="search" onclick="goPage('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Cari</span></div>
+    <div class="mni" data-p="lyrics" onclick="goPage('lyrics',this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Lirik</span></div>
+    <div class="mni" data-p="library" onclick="goPage('library',this)"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Koleksi</span></div>
+    <div class="mni" data-p="fav" onclick="goPage('fav',this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>Favorit</span></div>
+  </nav>
+</div>
+
+<div id="ytPlayer" style="position:fixed;bottom:-9999px;left:-9999px;width:1px;height:1px;z-index:-99;pointer-events:none;opacity:0"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
