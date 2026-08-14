@@ -172,7 +172,7 @@ async function ytFull(q,max=10){
         ||v.snippet?.thumbnails?.high?.url
         ||v.snippet?.thumbnails?.medium?.url
         ||s.thumb;
-      return{...s,thumb:th,dur:parseDur(v.contentDetails?.duration||'')};
+      return{...s,thumb:th,dur:parseDur(v.contentDetails?.duration||''),durationSec:parseDurSec(v.contentDetails?.duration||'')};
     });
   }catch{return base}
 }
@@ -192,6 +192,18 @@ function parseDur(iso){
   const h=+(m[1]||0),mn=+(m[2]||0),s=+(m[3]||0);
   if(h)return`${h}:${String(mn).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   return`${mn}:${String(s).padStart(2,'0')}`;
+}
+function parseDurSec(iso){
+  const m=iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if(!m)return 0;
+  return(+(m[1]||0))*3600+(+(m[2]||0))*60+(+(m[3]||0));
+}
+const COMPILATION_WORDS=['full album','nonstop','non stop','kompilasi','medley','best of','sepanjang masa','lagu hits','tanpa iklan','1 jam','2 jam','3 jam','playlist','mix ','terpopuler sepanjang','spesial'];
+function isLikelyCompilation(s){
+  const t=(s.title||'').toLowerCase();
+  if(COMPILATION_WORDS.some(w=>t.includes(w)))return true;
+  if(s.durationSec&&s.durationSec>420)return true;
+  return false;
 }
 
 function mapItem(i){
@@ -232,22 +244,42 @@ async function applyRealCover(s){
   $('fsBlur').style.backgroundImage=`url('${url}')`;
 }
 
+function cleanTitleForLyrics(t){
+  return String(t||'')
+    .replace(/\(.*?\)|\[.*?\]/g,' ')
+    .replace(/official|video|music|audio|lyrics?|lirik|mv|hd|4k|full album|remaster(ed)?/gi,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
 async function fetchLyrics(title,artist){
   S.lyrics=[];
   renderLyricsPage();
+  const cleanTitle=cleanTitleForLyrics(title);
+  let found=false;
   try{
-    const r=await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}`,{signal:AbortSignal.timeout(5000)});
-    if(!r.ok)throw new Error();
-    const data=await r.json();
-    if(!data.length)throw new Error('no results');
-    const best=data.find(x=>x.syncedLyrics)||data.find(x=>x.plainLyrics)||data[0];
-    if(best?.syncedLyrics){
-      S.lyrics=parseLRC(best.syncedLyrics);
-    }else if(best?.plainLyrics){
-      S.lyrics=best.plainLyrics.split('\n').map((line,i)=>({time:-1,text:line}));
+    const r=await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTitle)}&artist_name=${encodeURIComponent(artist)}`);
+    if(r.ok){
+      const data=await r.json();
+      if(data.length){
+        const best=data.find(x=>x.syncedLyrics)||data.find(x=>x.plainLyrics)||data[0];
+        if(best?.syncedLyrics){S.lyrics=parseLRC(best.syncedLyrics);found=true}
+        else if(best?.plainLyrics){S.lyrics=best.plainLyrics.split('\n').map(line=>({time:-1,text:line}));found=true}
+      }
     }
-  }catch{
-    S.lyrics=[];
+  }catch(e){}
+  if(!found){
+    try{
+      const r2=await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTitle)}`);
+      if(r2.ok){
+        const data2=await r2.json();
+        if(data2.length){
+          const best2=data2.find(x=>x.syncedLyrics)||data2.find(x=>x.plainLyrics)||data2[0];
+          if(best2?.syncedLyrics)S.lyrics=parseLRC(best2.syncedLyrics);
+          else if(best2?.plainLyrics)S.lyrics=best2.plainLyrics.split('\n').map(line=>({time:-1,text:line}));
+        }
+      }
+    }catch(e2){}
   }
   renderLyricsPage();
   renderFSLyrics();
@@ -336,15 +368,18 @@ function saveStorage(){
 }
 
 function getPersonalizedQuickPicks(){
+  if(S.recent.length<3){
+    $('qTitle').textContent='Pilihan Cepat';
+    return DEFAULT_QGENRES;
+  }
   const counts={};
   S.recent.forEach(s=>{counts[s.artist]=(counts[s.artist]||0)+1});
-  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6).map(e=>e[0]);
-  if(top.length>=3){
-    $('qTitle').textContent='Sering Kamu Dengarkan';
-    return top.map(artist=>({label:artist,q:artist+' official music'}));
-  }
-  $('qTitle').textContent='Pilihan Cepat';
-  return DEFAULT_QGENRES;
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
+  const picks=top.slice(0,6).map(artist=>({label:artist,q:artist+' official music'}));
+  let f=0;
+  while(picks.length<6&&f<DEFAULT_QGENRES.length){picks.push(DEFAULT_QGENRES[f]);f++}
+  $('qTitle').textContent='Sering Kamu Dengarkan';
+  return picks;
 }
 
 async function boot(){
@@ -358,7 +393,20 @@ async function boot(){
   renderRecent();
   loadHome();
   bindAll();
+  bindAutoplayUnlock();
   toast('Deplay Music siap');
+}
+
+function bindAutoplayUnlock(){
+  const tryUnlock=()=>{
+    if(YTP&&YTP.playVideo&&S.song&&!S.playing){
+      if(silentCtx?.state==='suspended')silentCtx.resume();
+      YTP.playVideo();
+    }
+  };
+  document.addEventListener('pointerdown',tryUnlock);
+  document.addEventListener('touchstart',tryUnlock);
+  document.addEventListener('keydown',tryUnlock);
 }
 
 const QCOLORS=['#141414','#101010','#181818','#0e0e0e','#161616','#0c0c0c'];
@@ -397,8 +445,8 @@ function renderSBList(){
 }
 
 async function loadTrendingIndonesia(){
-  const batches=await Promise.all(TREND_QUERIES.map(q=>ytFull(q,8)));
-  const merged=[].concat(...batches);
+  const batches=await Promise.all(TREND_QUERIES.map(q=>ytFull(q,10)));
+  const merged=[].concat(...batches).filter(s=>!isLikelyCompilation(s));
   return dedupeSongs(merged).slice(0,16);
 }
 
@@ -411,6 +459,11 @@ async function loadHome(){
   ]);
   $('trendRow').innerHTML=tr.map(s=>buildCard(s)).join('')||'<div class="empty-note">Tidak ada hasil.</div>';
   $('recRow').innerHTML=rc.map(s=>buildCard(s)).join('');
+  if(!S.song&&tr.length){
+    const ri=Math.floor(Math.random()*tr.length);
+    S.queue=tr;S.idx=ri;
+    startPlay(tr[ri]);
+  }
   if(tr[0]){
     document.querySelectorAll('.pl-th').forEach((el,i)=>{
       const src=tr[i%tr.length]?.thumb||tr[0].thumb;
@@ -567,6 +620,7 @@ function startPlay(s){
   S.song=s;S.playing=true;
   S.recent=[s,...S.recent.filter(x=>x.id!==s.id)].slice(0,50);
   saveStorage();
+  renderQGrid();
   updateUI(s);setPS(true);updateColors(s);
   renderRecent();renderQueue();
   updateMediaSession(s);
