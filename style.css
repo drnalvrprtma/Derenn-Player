@@ -24,6 +24,8 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .glass-sheen::before{content:'';position:absolute;top:-70%;left:-30%;width:55%;height:240%;background:linear-gradient(120deg,rgba(255,255,255,.22),rgba(255,255,255,0) 65%);transform:rotate(18deg);pointer-events:none;opacity:.55;z-index:0}
 .glass-sheen>*{position:relative;z-index:1}
 
+.glass-panel{background:rgba(16,16,16,.95);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);border:1px solid var(--bd2);box-shadow:var(--shx)}
+
 #ld{position:fixed;inset:0;z-index:9999;background:var(--b0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px}
 .ld-logo{display:flex;align-items:center;gap:13px;animation:riseUp .7s var(--ease) both}
 .ld-dot{width:46px;height:46px;border-radius:12px;background:var(--g);display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px var(--gg);animation:ipulse 2s ease infinite}
@@ -96,9 +98,9 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 @keyframes dropIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
 .dd-row{display:flex;align-items:center;gap:11px;padding:9px 13px;cursor:pointer;transition:background .15s}
 .dd-row:hover{background:rgba(255,255,255,.06)}
-.dd-th{width:40px;height:40px;border-radius:var(--r);background:var(--b3);flex-shrink:0;overflow:hidden;border:1px solid var(--bd)}
+.dd-th{width:40px;height:40px;border-radius:var(--r);background:var(--b4);flex-shrink:0;overflow:hidden;border:1px solid var(--bd2)}
 .dd-tx{flex:1;overflow:hidden}
-.dd-tt{font-size:.79rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dd-tt{font-size:.79rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
 .dd-ar{font-size:.69rem;color:var(--t2);margin-top:2px}
 .dd-du{font-size:.67rem;color:var(--t3);flex-shrink:0;margin-left:7px}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
@@ -192,7 +194,7 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .eq-a span:nth-child(2){animation-delay:.18s}
 .eq-a span:nth-child(3){animation-delay:.08s}
 @keyframes eqb{from{height:2px}to{height:12px}}
-@keyframes sk{from{background:rgba(255,255,255,.04)}to{background:rgba(255,255,255,.1)}}
+@keyframes sk{from{background:rgba(255,255,255,.09)}to{background:rgba(255,255,255,.24)}}
 .sk{animation:sk 1.1s ease-in-out infinite alternate;border-radius:5px}
 .skt{height:9px;border-radius:4px;animation:sk 1.1s ease-in-out infinite alternate}
 .empty-note{padding:14px 11px;font-size:.78rem;color:var(--t3)}
