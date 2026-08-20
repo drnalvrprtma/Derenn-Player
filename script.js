@@ -499,14 +499,21 @@ function setupTbSearch(){
     drop.innerHTML=skDrop(4);drop.classList.add('on');
     clearTimeout(t);
     t=setTimeout(async()=>{
-      const res=await ytFullUnique(q,7);
-      if(!res.length){drop.classList.remove('on');return}
-      drop.innerHTML=res.map(s=>`
-        <div class="dd-row" onclick="playSong(${e2(s)});clearTb()">
-          <div class="dd-th"><img src="${s.thumb}" loading="lazy" alt="" onerror="this.style.opacity=0"/></div>
-          <div class="dd-tx"><div class="dd-tt">${h(s.title)}</div><div class="dd-ar">${h(s.artist)}</div></div>
-          <span class="dd-du">${s.dur}</span>
-        </div>`).join('');
+      try{
+        const res=await ytFullUnique(q,7);
+        if(!res.length){
+          drop.innerHTML=`<div class="dd-empty">Tidak ada hasil untuk "${h(q)}"</div>`;
+          return;
+        }
+        drop.innerHTML=res.map(s=>`
+          <div class="dd-row" onclick="playSong(${e2(s)});clearTb()">
+            <div class="dd-th"><img src="${s.thumb}" loading="lazy" alt="" onerror="this.style.opacity=0"/></div>
+            <div class="dd-tx"><div class="dd-tt">${h(s.title)}</div><div class="dd-ar">${h(s.artist)}</div></div>
+            <span class="dd-du">${s.dur}</span>
+          </div>`).join('');
+      }catch(err){
+        drop.innerHTML=`<div class="dd-empty">Gagal memuat hasil. Periksa koneksi internet.</div>`;
+      }
     },340);
   });
   inp.addEventListener('focus',()=>{if(inp.value.trim())drop.classList.add('on')});
